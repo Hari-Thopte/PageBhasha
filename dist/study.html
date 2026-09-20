@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f7f6f0">
+  <meta name="description" content="Turn a textbook page into understanding. Learn in your language, ask your doubts, and practise with PageBhasha.">
+  <title>Learning Mode — PageBhasha</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;450;500;550;600;650;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="/enhancements.css?v=7"><link rel="stylesheet" href="/experience.css"><script type="module" src="/main.js?v=7?v=4"></script>
+</head>
+<body class="study-page">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <a class="brand" href="/" aria-label="PageBhasha home"><img src="/favicon.svg" alt="" width="36" height="36"><span>Page<span class="brand-light">Bhasha</span><span class="brand-dot">.</span></span></a>
+  <nav aria-label="Main navigation"><a href="/#how-it-works">How it works</a><a href="/#languages">Languages</a><a href="/notebook">My notebook <span id="history-count">0</span></a></nav>
+  <a href="/study" class="button small primary">New lesson <span class="arrow">↗</span></a>
+</header>
+<main id="main"><section id="study-view" class="section-wrap study-view">
+  <div class="study-top"><div class="workspace-nav"><a href="/" class="inline-link">← Home</a></div><span id="connection-status" hidden class="status-pill" role="status">Checking connection…</span></div>
+  <div class="study-title"><div><div class="eyebrow">YOUR OWN LITTLE LEARNING SPACE</div><h1>Learning <em>Mode.</em></h1><p class="study-subtitle">One page. Your language. A clearer way to learn.</p></div></div>
+  <div id="connection-explainer" class="connection-explainer" hidden>
+    <p>Live lessons are temporarily unavailable. See Demo shows how Learning Mode works while the service reconnects.</p>
+  </div><div class="workspace">
+    <aside class="source-panel panel"><div class="panel-heading"><span class="number-badge">01</span><h2>Your page, your pace</h2></div>
+      <div class="input-switch" aria-label="Choose source type"><button class="active" data-input="upload" aria-pressed="true">Upload a page</button><button data-input="text" aria-pressed="false">Paste text</button></div>
+      <div class="demo-entry"><span>First time here?</span><button id="try-demo" class="demo-button" type="button">See Demo <span aria-hidden="true">▷</span></button></div><div id="upload-input"><label class="dropzone" id="dropzone" for="page-file"><span class="upload-icon">↥</span><strong>Drop a little knowledge here</strong><span>or click to choose a page</span><small>PDF, JPG, PNG or WebP · up to 8 MB</small></label><input class="sr-only" id="page-file" type="file" accept="application/pdf,image/jpeg,image/png,image/webp"><label class="camera-link" for="camera-file">◎ Take a photo instead</label><input class="sr-only" id="camera-file" type="file" accept="image/*" capture="environment"><div id="image-preview" hidden><div class="source-canvas"><img id="source-image" alt="Your uploaded textbook page"></div><div class="viewer-tools" aria-label="Page viewer controls"><button type="button" data-viewer="zoom-out" aria-label="Zoom out">−</button><button type="button" data-viewer="zoom-in" aria-label="Zoom in">+</button><button type="button" data-viewer="rotate" aria-label="Rotate page">↻</button><button type="button" data-viewer="reset">Reset</button></div><div><span id="file-name"></span><button id="remove-image" class="icon-button" aria-label="Remove image">×</button></div></div></div>
+      <div id="pdf-controls" class="pdf-controls" hidden><label for="pdf-page">PDF page</label><input id="pdf-page" type="number" min="1" value="1"><span id="pdf-count"></span><button id="load-pdf-page" class="button secondary small">Load</button></div><div id="text-input" hidden><label for="source-text">Your textbook passage</label><textarea id="source-text" rows="7" maxlength="16000" placeholder="Paste the paragraph you want to understand…"></textarea><small>30–16,000 characters. One concept at a time works best.</small></div>
+      <div id="sample-source" hidden><div class="sample-heading"><span>Using: How plants make food (sample)</span><button class="inline-link" id="close-sample">Change</button></div><details><summary>Read sample source</summary><p id="sample-passage"></p></details></div>
+      <div class="field-row"><div><label for="language">Explain in</label><select id="language"></select></div><div><label for="level">I’m studying in</label><select id="level"><option>Class 6–8</option><option selected>Class 9–10</option><option>Class 11–12</option><option>College</option></select></div></div>
+      <label for="style">A little or a lot of detail?</label><select id="style"><option>Simple</option><option>Exam notes</option><option>Detailed</option></select>
+      <label class="toggle-label"><input type="checkbox" id="bilingual" checked><span>Keep English subject terms<small>A helpful bridge back to your textbook</small></span></label>
+      <button id="explain-button" class="button primary full">Explain this <span class="arrow">↗</span></button>
+      <p id="source-hint" class="fine-print">Your page is sent to the connected AI only when you ask for an explanation.</p>
+      <div id="input-error" class="error-box" role="alert" hidden></div><div id="error-actions" class="error-actions" hidden><button type="button" id="retry-lesson" class="demo-button">Try again</button><button type="button" id="error-demo" class="demo-button">See Demo</button></div>
+    </aside>
+    <div class="lesson-panel panel" id="lesson-panel" aria-busy="false">
+      <div id="empty-state" class="empty-state"><div class="empty-illustration"><span>?</span><span>अ</span><span>✧</span></div><div class="eyebrow">EVERY GREAT QUESTION STARTS SOMEWHERE</div><h2>A little clarity<br><em>is on its way.</em></h2><p>Add a page and pick your language.<br>We’ll take it one concept at a time.</p><div class="empty-bottom">UNDERSTAND <span>·</span> ASK <span>·</span> PRACTISE</div></div>
+      <div id="loading-state" class="thinking-state" role="status" hidden>
+        <div id="loading-book-mark" hidden style="display:none!important;visibility:hidden!important;width:0!important;height:0!important;overflow:hidden!important;position:absolute!important;pointer-events:none!important;" aria-hidden="true"></div>
+        <div class="thinking-card">
+          <div class="thinking-header" id="thinking-header" role="button" tabindex="0" aria-expanded="true">
+            <div class="thinking-title">
+              <svg class="thinking-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3" fill="currentColor" fill-opacity="0.25"></circle>
+                <path d="M12 3v3m0 12v3M3 12h3m12 0h3M5.6 5.6l2.1 2.1m8.6 8.6l2.1 2.1M5.6 18.4l2.1-2.1m8.6-8.6l2.1-2.1" stroke="currentColor" stroke-linecap="round"></path>
+              </svg>
+              <span>Thinking</span>
+              <svg class="thinking-chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+            <div class="thinking-meta">
+              <span class="thinking-pulse"></span>
+              <span id="thinking-status-text">Calculating data &amp; fetching...</span>
+              <span class="thinking-timer" id="thinking-timer">0.0s</span>
+            </div>
+          </div>
+          <div class="thinking-body" id="thinking-body">
+            <div class="thinking-rail">
+              <span class="thinking-dot"></span>
+              <div class="thinking-line"></div>
+            </div>
+            <div class="thinking-content">
+              <div class="thinking-log" id="thinking-log"></div>
+              <div class="thinking-metrics" id="thinking-metrics">
+                <span class="metric-pill">Payload: <strong id="metric-payload">0 B</strong></span>
+                <span class="metric-pill">Model: <strong>gemini-3.6-flash</strong></span>
+                <span class="metric-pill">Language: <strong id="metric-lang">Hindi</strong></span>
+                <span class="metric-pill">Status: <strong id="metric-status">Connecting</strong></span>
+              </div>
+            </div>
+          </div>
+          <div class="thinking-footer">
+            <p id="slow-request" class="thinking-slow" hidden>Still working. Your source is safe. You can cancel and retry with a shorter passage.</p>
+            <button id="cancel-request" type="button" class="button secondary small thinking-cancel">Cancel request</button>
+          </div>
+        </div>
+      </div>
+      <div id="lesson-content" hidden><div class="lesson-header"><div><span id="lesson-meta" class="eyebrow"></span><h2 id="lesson-title"></h2></div><span id="lesson-kind" hidden></span></div><div class="lesson-tabs" role="tablist" aria-label="Lesson sections"><button role="tab" id="tab-understand" aria-selected="true" aria-controls="pane-understand" data-tab="understand">Understand</button><button role="tab" id="tab-visual" aria-selected="false" tabindex="-1" aria-controls="pane-visual" data-tab="visual">Visual notes</button><button role="tab" id="tab-doubts" aria-selected="false" tabindex="-1" aria-controls="pane-doubts" data-tab="doubts">Ask a doubt</button><button role="tab" id="tab-practice" aria-selected="false" tabindex="-1" aria-controls="pane-practice" data-tab="practice">Quick practice</button></div>
+        <div id="pane-understand" role="tabpanel" aria-labelledby="tab-understand"><div id="lesson-body"></div><div class="lesson-actions"><div class="voiceover-group"><button id="read-aloud" class="button secondary small">Listen (Read aloud)</button><select id="voice-gender" class="voice-gender-select" title="Choose Voiceover Persona" aria-label="Choose Voiceover Persona"><option value="female" selected>Female voice</option><option value="male">Male voice</option></select></div><button id="download-notes" class="button secondary small">↓ Download PDF</button><button id="copy-notes" class="button text-button small">Copy notes ⧉</button></div><p class="fine-print">Compare important details with your source. AI explanations may contain mistakes.</p></div>
+        <div id="pane-visual" role="tabpanel" aria-labelledby="tab-visual" hidden><div id="visual-notes"></div><div class="lesson-actions"><button id="print-visual-notes" class="button secondary small">Print visual notes</button></div><p class="fine-print">This board is an original layout built from your lesson, not an AI-generated image. Compare important details with your source.</p></div>
+        <div id="pane-doubts" role="tabpanel" aria-labelledby="tab-doubts" hidden>
+          <div class="tutor-heading"><div><span class="eyebrow">YOUR LEARNING COMPANION</span><h3>Let’s work through it.</h3><p class="pane-intro">Ask freely. We’ll stay with your page and your lesson’s language.</p></div><button id="reset-chat" class="demo-button" type="button">New doubt</button></div>
+          <div id="followup-suggestions" class="suggestions"></div>
+          <div class="tutor-shortcuts"><button type="button" data-tutor-prompt="Explain the main idea more simply, in my selected language.">Explain simpler</button><button type="button" data-tutor-prompt="Give me an everyday example of the main idea. Clearly label it as an analogy.">Give an example</button><button type="button" data-tutor-prompt="Explain the important English subject terms in my selected language.">Explain terms</button></div>
+          <details class="tutor-source"><summary>View this lesson’s source</summary><p id="chat-source"></p></details>
+          <div id="chat-log" class="chat-log" role="log" aria-live="polite" aria-label="Your lesson conversation"></div>
+          <p id="chat-thinking" role="status" hidden><span class="thinking-dots" aria-hidden="true">● ● ●</span> Thinking through your question…</p>
+          <div id="chat-error" role="alert" hidden><p></p><button id="retry-chat" class="demo-button" type="button">Retry question</button></div>
+          <form id="doubt-form"><label for="question">What would you like to understand?</label><div class="question-row"><textarea id="question" rows="2" maxlength="1000" placeholder="Ask about this page…" required></textarea><button id="send-doubt" class="button primary" type="submit" aria-label="Send doubt">↑</button></div><div class="tutor-tools"><button id="dictate-doubt" class="demo-button" type="button">Dictate question</button><button id="cancel-doubt" class="demo-button" type="button" hidden>Cancel reply</button></div><p id="voice-hint" class="fine-print">Voice input uses your browser’s speech service. Review the transcript before sending.</p><p id="chat-hint" class="fine-print"></p></form>
+        </div>
+        <div id="pane-practice" role="tabpanel" aria-labelledby="tab-practice" hidden><p class="pane-intro">A small check-in. This is practice, not a test.</p><form id="quiz-form"><div id="quiz-questions"></div><button class="button primary" type="submit">Check my understanding <span class="arrow">↗</span></button></form><div id="quiz-result" role="status"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+</main><footer class="section-wrap"><a class="brand" href="/"><img src="/favicon.svg" width="28" height="28" alt=""><span>PageBhasha.</span></a><p>Understanding belongs to everyone.</p><span>Built with curiosity. Learn in your language.</span><a class="inline-link" href="/notebook">My notebook ↗</a></footer>
+<div id="toast" class="toast" role="status" hidden></div>
+</body></html>
