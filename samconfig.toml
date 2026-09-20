@@ -1,0 +1,14 @@
+version = 0.1
+
+[default.deploy.parameters]
+stack_name = "pagebhasha"
+resolve_s3 = true
+s3_prefix = "pagebhasha"
+region = "ap-south-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "AIProvider=\"gemini\" BedrockModelId=\"\" BedrockResourceArns=\"arn:aws:bedrock:us-east-1:123456789012:inference-profile/dummy\" GeminiSecretArn=\"arn:aws:secretsmanager:us-east-1:123456789012:secret:dummy-secret-123456\" GeminiModel=\"gemini-3.5-flash\" Stage=\"prod\""
+image_repositories = ["PageBhashaFunction=137181255781.dkr.ecr.ap-south-1.amazonaws.com/pagebhashac17d3bb1/pagebhashafunction0e814202repo"]
+
+[default.global.parameters]
+region = "ap-south-1"

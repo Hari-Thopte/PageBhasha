@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import {plainMath,exactRange,pdfBoxes,glossaryEntry} from './web/learning-utils.js';
+assert.equal(plainMath('$CO_2$ + $H_{2}O$ → x^2'),'CO₂ + H₂O → x²');
+assert.deepEqual(exactRange('Plants\n use sunlight.','Plants use'),[0,11]);
+assert.equal(exactRange('water and water','water'),null);
+assert.equal(exactRange('Water','water'),null);
+assert.deepEqual(pdfBoxes([{text:'Plants',box:[0,0,.1,.1]},{text:'grow',box:[.1,0,.1,.1]}],'Plants grow'),[[0,0,.1,.1],[.1,0,.1,.1]]);
+assert.deepEqual(pdfBoxes([{text:'Plants',box:[0,0,.1,.1]}],'invented'),[]);
+assert.equal(glossaryEntry({quote:'Chloroplasts, which contain pigments',explanation:'Definition'}).term,'Chloroplasts');
+assert.deepEqual(pdfBoxes([{text:'sunlight',box:[0,0,.1,.1]}],'light'),[]);
+console.log('8 formatting and exact-match checks passed.');

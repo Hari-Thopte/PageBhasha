@@ -1,0 +1,144 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  PageBhasha — regional-language textbook tutor.
+  Lambda API + S3/CloudFront static frontend + Bedrock IAM or Secrets Manager-backed Gemini inference.
+
+Parameters:
+  AIProvider:
+    Type: String
+    Default: bedrock
+    AllowedValues: [bedrock, gemini]
+  BedrockModelId:
+    Type: String
+    Default: ''
+    Description: Vision-capable Converse model or inference profile ID.
+  BedrockResourceArns:
+    Type: CommaDelimitedList
+    Default: 'arn:aws:bedrock:us-east-1:123456789012:inference-profile/dummy'
+    Description: Exact model/profile ARNs permitted for InvokeModel, including destination model ARNs for cross-region profiles.
+  GeminiSecretArn:
+    Type: String
+    Default: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:dummy-secret-123456'
+    Description: Existing Secrets Manager secret ARN; JSON contains GEMINI_API_KEY.
+  GeminiModel:
+    Type: String
+    Default: gemini-3.5-flash
+  Stage:
+    Type: String
+    Description: Deployment stage name
+    Default: prod
+    AllowedValues: [dev, prod]
+
+Globals:
+  Function:
+    Timeout: 120
+    MemorySize: 512
+
+Conditions:
+  UseBedrock: !Equals [!Ref AIProvider, bedrock]
+  UseGemini: !Equals [!Ref AIProvider, gemini]
+
+Resources:
+
+  # ── Lambda Function (container image) ──────────────────────────
+  PageBhashaFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      DockerTag: pagebhasha-api
+      DockerContext: .
+      Dockerfile: Dockerfile
+    Properties:
+      PackageType: Image
+      Architectures: [x86_64]
+      Environment:
+        Variables:
+          PAGEBHASHA_AI_PROVIDER: !Ref AIProvider
+          PAGEBHASHA_MODEL_ID: !Ref BedrockModelId
+          PAGEBHASHA_GEMINI_SECRET_ARN: !Ref GeminiSecretArn
+          PAGEBHASHA_GEMINI_MODEL: !Ref GeminiModel
+      Policies:
+        - !If
+          - UseBedrock
+          - Statement:
+              - Effect: Allow
+                Action: bedrock:InvokeModel
+                Resource: !Ref BedrockResourceArns
+          - !Ref AWS::NoValue
+        - !If
+          - UseGemini
+          - Statement:
+              - Effect: Allow
+                Action: secretsmanager:GetSecretValue
+                Resource: !Ref GeminiSecretArn
+          - !Ref AWS::NoValue
+      Events:
+        ApiGet:
+          Type: HttpApi
+          Properties:
+            Path: /api/{proxy+}
+            Method: GET
+            ApiId: !Ref PageBhashaApi
+        ApiPost:
+          Type: HttpApi
+          Properties:
+            Path: /api/{proxy+}
+            Method: POST
+            ApiId: !Ref PageBhashaApi
+
+  # ── HTTP API Gateway ───────────────────────────────────────────
+  PageBhashaApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: !Ref Stage
+      CorsConfiguration:
+        AllowOrigins:
+          - '*'
+        AllowHeaders:
+          - '*'
+        AllowMethods:
+          - '*'
+        MaxAge: 600
+      DefaultRouteSettings:
+        ThrottlingBurstLimit: 5
+        ThrottlingRateLimit: 2
+
+  # ── S3 Bucket for static frontend ─────────────────────────────
+  FrontendBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: index.html
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+
+  FrontendBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref FrontendBucket
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal: '*'
+            Action: s3:GetObject
+            Resource: !Sub '${FrontendBucket.Arn}/*'
+  FunctionLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${PageBhashaFunction}'
+      RetentionInDays: 7
+
+Outputs:
+  WebsiteURL:
+    Description: S3 Static Website URL (use this to access the app)
+    Value: !GetAtt FrontendBucket.WebsiteURL
+  ApiUrl:
+    Description: API Gateway endpoint URL
+    Value: !Sub 'https://${PageBhashaApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}/'
+  FrontendBucketName:
+    Description: S3 bucket name for frontend deployment
+    Value: !Ref FrontendBucket
